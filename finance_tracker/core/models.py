@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import User  # 👈 теперь используем кастомного
 
 
 class Category(models.Model):
@@ -29,3 +29,4 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.get_type_display()} {self.amount} ({self.category})"
+
