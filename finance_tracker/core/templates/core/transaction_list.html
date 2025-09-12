@@ -1,23 +1,14 @@
-{% extends "core/base.html" %}
+{% extends "base.html" %}
+
 {% block content %}
-<h2>Мои операции</h2>
-<a href="{% url 'add_transaction' %}">Добавить операцию</a>
-<table class="table">
-    <tr>
-        <th>Дата</th>
-        <th>Тип</th>
-        <th>Сумма</th>
-        <th>Категория</th>
-        <th>Описание</th>
-    </tr>
+<h2>Ваши операции</h2>
+   <p><a href="{% url 'add_transaction' %}">Добавить операцию</a> |
+      <a href="{% url 'add_category' %}">Добавить категорию</a></p>
+<ul>
     {% for t in transactions %}
-    <tr>
-        <td>{{ t.date }}</td>
-        <td>{{ t.get_type_display }}</td>
-        <td>{{ t.amount }}</td>
-        <td>{{ t.category }}</td>
-        <td>{{ t.description }}</td>
-    </tr>
+        <li>{{ t.date }} — {{ t.amount }} ({{ t.get_type_display }}) — {{ t.category }}</li>
+    {% empty %}
+        <li>Пока нет операций</li>
     {% endfor %}
-</table>
+</ul>
 {% endblock %}

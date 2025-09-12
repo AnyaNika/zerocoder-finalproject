@@ -1,9 +1,10 @@
-{% extends "core/base.html" %}
+{% extends "base.html" %}
+
 {% block content %}
 <h2>Добавить операцию</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <button type="submit">Сохранить</button>
 </form>
 {% endblock %}

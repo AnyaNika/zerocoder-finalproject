@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Мои категории</h1>
+
+<ul>
+  {% for category in categories %}
+    <li>
+      {{ category.name }}
+      <a href="{% url 'delete_category' category.pk %}">Удалить</a>
+    </li>
+  {% empty %}
+    <li>У вас пока нет категорий</li>
+  {% endfor %}
+</ul>
+
+<h2>Добавить категорию</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Добавить</button>
+</form>
+{% endblock %}
