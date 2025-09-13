@@ -11,4 +11,6 @@ urlpatterns = [
 
     # Наше приложение
     path('', include('core.urls')),
+
+    path('api/', include('api.urls')),
 ]
