@@ -10,3 +10,8 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
+
+class TelegramProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ("id", "username", "telegram_id")  # добавляем telegram_id
