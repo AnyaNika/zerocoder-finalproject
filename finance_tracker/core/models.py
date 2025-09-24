@@ -28,8 +28,10 @@ class Transaction(models.Model):
 
 
 class TelegramProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     telegram_id = models.BigIntegerField(unique=True)
+    telegram_username = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} ↔ {self.telegram_id}"
+
