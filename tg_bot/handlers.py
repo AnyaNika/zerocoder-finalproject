@@ -9,7 +9,7 @@ from aiogram.fsm.context import FSMContext
 
 from services import (
     get_today_transactions, get_week_transactions,
-    get_category_transactions, register_user, add_transaction
+    get_category_transactions, register_user, add_transaction, calculate_week_expenses
 )
 
 router = Router()
@@ -64,6 +64,8 @@ async def today_handler(message: Message):
 async def week_handler(message: Message):
     tg_id = message.from_user.id
     transactions = await get_week_transactions(tg_id)
+    total_expenses = calculate_week_expenses(transactions)
+    print("Расходы за неделю:", total_expenses)
 
     if transactions:
         total = sum(float(t["amount"]) for t in transactions)
