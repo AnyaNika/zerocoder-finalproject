@@ -8,7 +8,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
 from services import (
-    get_today_transactions, get_week_transactions,
+    get_today_transactions, get_week_transactions, get_categories,
     get_category_transactions, register_user, add_transaction, calculate_week_expenses
 )
 
@@ -113,12 +113,19 @@ async def process_amount(message: Message, state: FSMContext):
 
     await state.update_data(amount=amount)
 
-    # категории можно подтянуть из базы или задать вручную
-    categories = ["food", "transport", "entertainment", "other"]
+    # подтягиваем категории из базы для конкретного пользователя
+    tg_id = message.from_user.id
+    categories = await get_categories(tg_id)
 
+    if not categories:
+        await message.answer("❌ У вас пока нет категорий. Добавьте их через меню!")
+        await state.clear()
+        return
+
+     # строим клавиатуру из списка категорий
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=cat, callback_data=f"category:{cat}")]
+            [InlineKeyboardButton(text=cat["name"], callback_data=f"category:{cat['name']}")]
             for cat in categories
         ]
     )
