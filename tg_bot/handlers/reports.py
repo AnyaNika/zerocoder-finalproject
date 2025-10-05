@@ -1,8 +1,9 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from services import (get_today_transactions, get_week_transactions,
-                      calculate_week_expenses, get_category_transactions)
+from tg_bot.services import (get_today_transactions, get_week_transactions,
+                             calculate_week_expenses, get_category_transactions, get_category_id_by_name
+                             )
 
 router = Router()
 
@@ -49,13 +50,29 @@ async def category_handler(message: Message):
         await message.answer("Укажи категорию: /category food")
         return
 
-    category = parts[1]
-    transactions = await get_category_transactions(tg_id, category)
+    category_name = parts[1]
+    category_id = await get_category_id_by_name(tg_id, category_name)
+    if not category_id:
+        await message.answer(f"Категория '{category_name}' не найдена.")
+        return
+
+    transactions = await get_category_transactions(tg_id, category_id)
+    print(transactions)
 
     if transactions:
-        total = sum(float(t["amount"]) for t in transactions)
-        text = f"Всего по категории '{category}': {total} руб."
+        expenses = [float(t["amount"]) for t in transactions if t.get("type") == "expense"]
+        incomes = [float(t["amount"]) for t in transactions if t.get("type") == "income"]
+
+        total_expense = sum(expenses)
+        total_income = sum(incomes)
+        total = total_income - total_expense
+
+        text = (
+            f"Всего расходов по категории '{category_name}': {total_expense} руб.\n"
+            f"Всего доходов по категории '{category_name}': {total_income} руб.\n"
+            f"Общий итог по категории '{category_name}': {total} руб."
+        )
     else:
-        text = f"Нет транзакций по категории '{category}'."
+        text = f"Нет транзакций по категории '{category_name}'."
 
     await message.answer(text)

@@ -1,7 +1,9 @@
 from aiogram import Router
 from aiogram.filters import Command
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from services import register_user
+from aiogram.types import Message
+from tg_bot.services import register_user
+from tg_bot.keyboards import kb_expense
+
 
 router = Router()
 
@@ -14,13 +16,8 @@ async def start_handler(message: Message):
 
     data = await register_user(tg_id, tg_username)
 
-    kb = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="➕ Добавить расход", callback_data="add_expense")]
-        ]
-    )
 
     if data.get("created"):
-        await message.answer(f"Привет, {display_name}! Я создал тебе аккаунт ✅", reply_markup=kb)
+        await message.answer(f"Привет, {display_name}! Я создал тебе аккаунт ✅", reply_markup=kb_expense)
     else:
-        await message.answer(f"С возвращением, {display_name}! 👋", reply_markup=kb)
+        await message.answer(f"С возвращением, {display_name}! 👋", reply_markup=kb_expense)

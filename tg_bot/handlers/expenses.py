@@ -2,7 +2,9 @@ from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from services import get_categories, add_transaction
+from tg_bot.services import get_categories, add_transaction
+from tg_bot.keyboards import get_category_keyboard
+
 
 router = Router()
 
@@ -32,24 +34,20 @@ async def process_amount(message: Message, state: FSMContext):
 
     await state.update_data(amount=amount)
 
+    # подтягиваем категории из базы для конкретного пользователя
     tg_id = message.from_user.id
     categories = await get_categories(tg_id)
 
     if not categories:
-        await message.answer("❌ У вас пока нет категорий. Добавьте их через меню!")
+        await message.answer("❌ У вас пока нет категорий. Добавьте их через личный кабинет!")
         await state.clear()
         return
 
-    # строим клавиатуру категорий
-    kb = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text=cat["name"], callback_data=f"category:{cat['id']}")]
-for cat in categories
-        ]
-    )
+    # строим клавиатуру из списка категорий
+    kb_category = get_category_keyboard(categories)
 
     await state.set_state(AddExpense.waiting_for_category)
-    await message.answer("Выберите категорию:", reply_markup=kb)
+    await message.answer("Выберите категорию:", reply_markup=kb_category)
 
 
 # ---------- выбор категории ----------
@@ -57,9 +55,12 @@ for cat in categories
 async def process_category(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     amount = data["amount"]
-    category_id = callback.data.split(":")[1]
 
+    category_id_str = callback.data.split(":")[1]
     tg_id = callback.from_user.id
+    category_id = int(category_id_str)
+
+    # сохраняем расход
     await add_transaction(tg_id, amount, category_id)
 
     await callback.message.answer(f"✅ Добавлен расход {amount} руб.")

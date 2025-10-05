@@ -14,10 +14,7 @@ async def register_user(tg_id: int, tg_username: str):
             return await response.json()
 
 
-async def add_transaction(tg_id: int, amount: float, category_name: str):
-    category_id = await get_category_id(tg_id, category_name)
-    if category_id is None:
-        return {"error": "Категория не найдена", "category": category_name}
+async def add_transaction(tg_id: int, amount: float, category_id: int):
 
     url = f"{API_URL}/transactions/"
     payload = {
@@ -26,7 +23,7 @@ async def add_transaction(tg_id: int, amount: float, category_name: str):
         "category": category_id,  # <-- отправляем ID категории
         "type": "expense",
         "date": str(date.today())
-    }
+}
     print("Отправляем данные в add_transaction:", payload)
     async with aiohttp.ClientSession() as session:
         async with session.post(url, json=payload) as response:
@@ -81,9 +78,10 @@ async def get_week_transactions(tg_id: int):
             return []
 
 
-async def get_category_transactions(tg_id: int, category: str):
+async def get_category_transactions(tg_id: int, category_id: int):
     url = f"{API_URL}/transactions/"
-    params = {"tg_id": tg_id, "category": category}
+
+    params = {"tg_id": tg_id, "category": category_id}
     print("GET category:", params)  # <-- Лог
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
@@ -104,7 +102,7 @@ async def get_categories(tg_id: int):
                 return await response.json()
             return []
 
-async def get_category_id(tg_id: int, category_name: str):
+async def get_category_id_by_name(tg_id: int, category_name: str):
     categories = await get_categories(tg_id)
     for cat in categories:
         if cat["name"].lower() == category_name.lower():
