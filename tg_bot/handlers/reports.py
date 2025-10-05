@@ -2,7 +2,8 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 from tg_bot.services import (get_today_transactions, get_week_transactions,
-                             calculate_week_expenses, get_category_transactions, get_category_id_by_name
+                             calculate_week_expenses, get_category_transactions,
+                             get_category_id_by_name, get_categories
                              )
 
 router = Router()
@@ -13,9 +14,15 @@ router = Router()
 async def today_handler(message: Message):
     tg_id = message.from_user.id
     transactions = await get_today_transactions(tg_id)
+    categories = await get_categories(tg_id)
+    # Создаём мапу id->name
+    cat_map = {cat['id']: cat['name'] for cat in categories}
 
     if transactions:
-        text = "\n".join([f"{t['amount']} руб — {t['category']}" for t in transactions])
+        text = "\n".join([
+            f"{t['amount']} руб — {cat_map.get(t['category'], t['category'])}"
+            for t in transactions
+        ])
     else:
         text = "Сегодня ещё не было транзакций."
 
@@ -33,7 +40,7 @@ async def week_handler(message: Message):
 
     if transactions:
         total = sum(float(t["amount"]) for t in transactions)
-        text = f"За последние 7 дней: {total} руб."
+        text = f"За последние 7 дней потрачено: {total} руб."
     else:
         text = "За неделю транзакций нет."
 

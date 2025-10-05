@@ -81,7 +81,7 @@ async def get_week_transactions(tg_id: int):
 async def get_category_transactions(tg_id: int, category_id: int):
     url = f"{API_URL}/transactions/"
 
-    params = {"tg_id": tg_id, "category": category_id}
+    params = {"tg_id": tg_id, "category_id": category_id}
     print("GET category:", params)  # <-- Лог
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:

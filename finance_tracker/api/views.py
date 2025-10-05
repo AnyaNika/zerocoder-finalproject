@@ -15,7 +15,8 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         tg_id = self.request.query_params.get("tg_id")
         date_filter = self.request.query_params.get("date")
-
+        category_id = self.request.query_params.get("category_id")  # id категории
+        category_name = self.request.query_params.get("category")  # имя категории (опционально)
         qs = Transaction.objects.all()
 
         if tg_id:
@@ -28,7 +29,10 @@ class TransactionViewSet(viewsets.ModelViewSet):
         if date_filter == "today":
             today = now().date()
             qs = qs.filter(date=today)
-
+        if category_id:
+            qs = qs.filter(category_id=category_id)
+        elif category_name:
+            qs = qs.filter(category__name__iexact=category_name)
         return qs
 
     def create(self, request, *args, **kwargs):

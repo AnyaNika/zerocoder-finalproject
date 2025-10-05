@@ -54,15 +54,29 @@ async def process_amount(message: Message, state: FSMContext):
 @router.callback_query(AddExpense.waiting_for_category, F.data.startswith("category:"))
 async def process_category(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    amount = data["amount"]
-
+    amount = data.get("amount")
     category_id_str = callback.data.split(":")[1]
     tg_id = callback.from_user.id
-    category_id = int(category_id_str)
+
+    # Проверяем и конвертируем category_id
+    try:
+        category_id = int(category_id_str)
+    except ValueError:
+        await callback.message.answer("❌ Ошибка: некорректная категория.")
+        await callback.answer()
+        return
+
+    # Проверяем наличие и тип amount
+    try:
+        amount = float(amount)
+    except (TypeError, ValueError):
+        await callback.message.answer("❌ Ошибка: некорректная сумма.")
+        await callback.answer()
+        await state.clear()
+        return
 
     # сохраняем расход
     await add_transaction(tg_id, amount, category_id)
-
     await callback.message.answer(f"✅ Добавлен расход {amount} руб.")
     await state.clear()
     await callback.answer()

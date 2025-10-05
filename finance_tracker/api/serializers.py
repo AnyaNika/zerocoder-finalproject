@@ -13,5 +13,5 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class TelegramProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
+        model = TelegramProfile
         fields = ("id", "username", "telegram_id")  # добавляем telegram_id
