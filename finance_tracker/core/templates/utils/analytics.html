@@ -1,0 +1,47 @@
+{% block content %}
+<h2>Аналитика</h2>
+<h3>Доходы и расходы по времени</h3>
+{% if img_income_expense %}
+  <img src="data:image/png;base64,{{ img_income_expense }}">
+{% else %}
+  <p>Нет данных для отображения</p>
+{% endif %}
+<h3>Расходы по категориям</h3>
+{% if img_expense_pie %}
+  <img src="data:image/png;base64,{{ img_expense_pie }}">
+{% else %}
+  <p>Нет данных для отображения</p>
+{% endif %}
+<h3>Статистика</h3>
+<p>Доходы: {{ stats.total_income }}</p>
+<p>Расходы: {{ stats.total_expense }}</p>
+<p>Баланс: {{ stats.balance }}</p>
+
+{% if anomalies %}
+  <h4>Аномалии:</h4>
+  <ul>
+  {% for a in anomalies %}
+    <li>{{ a }}</li>
+  {% endfor %}
+  </ul>
+{% endif %}
+
+{% if advices %}
+  <h4>Советы:</h4>
+  <ul>
+  {% for a in advices %}
+    <li>{{ a }}</li>
+  {% endfor %}
+  </ul>
+{% endif %}
+
+{% if warning %}
+      <div class="alert alert-warning">{{ warning }}</div>
+   {% endif %}
+   {% if income_expense_plot %}
+      <img src="data:image/png;base64,{{ income_expense_plot }}" />
+   {% endif %}
+   {% if expense_pie_plot %}
+      <img src="data:image/png;base64,{{ expense_pie_plot }}" />
+   {% endif %}
+{% endblock %}

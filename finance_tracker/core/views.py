@@ -5,7 +5,10 @@ from .models import Transaction, Category
 from .forms import TransactionForm, CategoryForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-
+from utils.analytics import (get_transactions_df, calculate_stats,
+                             detect_anomalies, generate_advice)
+from utils.plots import plot_income_expense, plot_expense_pie
+from datetime import date, timedelta
 
 @login_required
 def transaction_list(request):
@@ -62,6 +65,45 @@ def delete_category(request, pk):
     category = get_object_or_404(Category, pk=pk, user=request.user)
     category.delete()
     return redirect("my_categories")
+
+@login_required
+def analytics(request):
+    user = request.user
+    # Фильтры из GET-параметров (например, ?period=month)
+    period = request.GET.get('period', 'month')
+    today = date.today()
+    if period == 'day':
+        date_from = today
+    elif period == 'week':
+        date_from = today - timedelta(days=7)
+    elif period == 'year':
+        date_from = today - timedelta(days=365)
+    else:  # месяц по умолчанию
+        date_from = today - timedelta(days=30)
+    df = get_transactions_df(user, date_from=date_from)
+    if df.empty or 'amount' not in df.columns:
+        return render(request, "analytics.html", {
+            "warning": "Нет данных для отображения.",
+            "income_expense_plot": None,
+            "expense_pie_plot": None,
+            "stats": {},
+            "anomalies": [],
+            "advices": []
+            })
+    stats = calculate_stats(df)
+    # stats['total_income'], stats['total_expense'], stats['balance']
+    anomalies = detect_anomalies(df)
+    advices = generate_advice(df)
+    img_income_expense = plot_income_expense(df)
+    img_expense_pie = plot_expense_pie(df)
+
+    return render(request, 'utils/analytics.html', {
+        'img_income_expense': img_income_expense,
+        'img_expense_pie': img_expense_pie,
+        'stats': stats, 'anomalies': anomalies,
+        'advices': advices,
+    })
+
 
 def register(request):
     if request.method == "POST":
