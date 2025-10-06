@@ -1,5 +1,5 @@
 from django import forms
-from .models import Transaction, Category
+from .models import Transaction, Category, TelegramProfile
 
 
 class TransactionForm(forms.ModelForm):
@@ -19,3 +19,8 @@ class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ['name']
+
+class TelegramProfileForm(forms.ModelForm):
+    class Meta:
+        model = TelegramProfile
+        fields = ['telegram_id', 'telegram_username']

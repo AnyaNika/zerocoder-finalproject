@@ -1,8 +1,8 @@
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
-from .models import Transaction, Category
-from .forms import TransactionForm, CategoryForm
+from .models import Transaction, Category, TelegramProfile
+from .forms import TransactionForm, CategoryForm, TelegramProfileForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from utils.analytics import (get_transactions_df, calculate_stats,
@@ -123,6 +123,23 @@ def analytics(request):
         'advices': advices, 'category_stats': category_stats,
     })
 
+@login_required
+def profile_view(request):
+    try:
+        profile = request.user.telegramprofile
+    except TelegramProfile.DoesNotExist:
+        profile = None
+
+    if request.method == 'POST':
+        form = TelegramProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            telegram_profile = form.save(commit=False)
+            telegram_profile.user = request.user
+            telegram_profile.save()
+            return redirect('/')
+    else:
+        form = TelegramProfileForm(instance=profile)
+    return render(request, 'core/profile.html', {'form': form})
 
 def register(request):
     if request.method == "POST":

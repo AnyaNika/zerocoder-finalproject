@@ -10,7 +10,8 @@
         <nav>
           <a href="{% url 'transaction_list' %}">Мои транзакции</a> |
           <a href="{% url 'my_categories' %}">Мои категории</a> |
-          <a href="{% url 'analytics' %}">Аналитика</a>
+          <a href="{% url 'analytics' %}">Аналитика</a>|
+          <a href="{% url 'profile' %}">Личный кабинет</a>
         </nav>
         <p>
             Привет, {{ user.username }}!
@@ -31,3 +32,4 @@
     {% block content %}{% endblock %}
 </body>
 </html>
+
