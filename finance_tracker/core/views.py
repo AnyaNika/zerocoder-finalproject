@@ -13,7 +13,23 @@ from datetime import date, timedelta
 @login_required
 def transaction_list(request):
     transactions = Transaction.objects.filter(user=request.user).order_by("-date")
-    return render(request, "core/transaction_list.html", {"transactions": transactions})
+    categories = Category.objects.filter(user=request.user)
+
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    category = request.GET.get('category')
+
+    if date_from:
+        transactions = transactions.filter(date__gte=date_from)
+    if date_to:
+        transactions = transactions.filter(date__lte=date_to)
+    if category:
+        transactions = transactions.filter(category_id=category)
+
+    return render(request, "core/transaction_list.html", {
+        "transactions": transactions,
+        "categories": categories
+    })
 
 @login_required
 def my_categories(request):
