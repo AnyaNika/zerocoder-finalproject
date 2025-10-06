@@ -9,7 +9,8 @@
 
         <nav>
           <a href="{% url 'transaction_list' %}">Мои транзакции</a> |
-          <a href="{% url 'my_categories' %}">Мои категории</a>
+          <a href="{% url 'my_categories' %}">Мои категории</a> |
+          <a href="{% url 'analytics' %}">Аналитика</a>
         </nav>
         <p>
             Привет, {{ user.username }}!
