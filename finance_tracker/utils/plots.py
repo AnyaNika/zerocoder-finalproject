@@ -44,6 +44,7 @@ def plot_expense_pie(df):
         return None
     plt.figure(figsize=(6, 6))
     df_grouped.plot.pie(autopct='%1.1f%%')
+    plt.ylabel('')
     plt.title('Расходы по категориям')
     plt.tight_layout()
     buffer = BytesIO()

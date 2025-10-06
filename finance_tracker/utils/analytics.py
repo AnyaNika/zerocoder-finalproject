@@ -64,3 +64,14 @@ def calculate_stats(df):
     result['total_expense'] = df[df['type'] == 'expense']['amount'].sum()
     result['balance'] = result['total_income'] - result['total_expense']
     return result
+
+def category_report(df):
+    # Считаем сумму по категориям только для расходов
+    if df.empty or 'amount' not in df.columns:
+        return []
+    df_expense = df[df['type'] == 'expense']
+    if df_expense.empty:
+        return []
+    grouped = df_expense.groupby('category__name')['amount'].sum()
+    # Преобразуем в список словарей для шаблона
+    return [{'category': cat, 'amount': amt} for cat, amt in grouped.items()]

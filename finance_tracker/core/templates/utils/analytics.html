@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Аналитика</h2>
+<form method="get">
+  <select name="period">
+    <option value="day" {% if request.GET.period == 'day' %}selected{% endif %}>День</option>
+    <option value="week" {% if request.GET.period == 'week' %}selected{% endif %}>Неделя</option>
+    <option value="month" {% if request.GET.period == 'month' %}selected{% endif %}>Месяц</option>
+    <option value="year" {% if request.GET.period == 'year' %}selected{% endif %}>Год</option>
+  </select>
+  <button type="submit">Показать</button>
+</form>
 <h3>Доходы и расходы по времени</h3>
 {% if img_income_expense %}
   <img src="data:image/png;base64,{{ img_income_expense }}">
@@ -17,6 +26,19 @@
 <p>Доходы: {{ stats.total_income }}</p>
 <p>Расходы: {{ stats.total_expense }}</p>
 <p>Баланс: {{ stats.balance }}</p>
+
+<h3>Отчёт по категориям</h3>
+<table>
+  <tr><th>Категория</th><th>Сумма</th></tr>
+  {% for row in category_stats %}
+    <tr>
+      <td>{{ row.category }}</td>
+      <td>{{ row.amount }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="2">Нет данных</td></tr>
+  {% endfor %}
+</table>
 
 {% if anomalies %}
   <h4>Аномалии:</h4>

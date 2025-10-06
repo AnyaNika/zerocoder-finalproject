@@ -6,7 +6,7 @@ from .forms import TransactionForm, CategoryForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from utils.analytics import (get_transactions_df, calculate_stats,
-                             detect_anomalies, generate_advice)
+                             detect_anomalies, generate_advice, category_report)
 from utils.plots import plot_income_expense, plot_expense_pie
 from datetime import date, timedelta
 
@@ -80,15 +80,18 @@ def analytics(request):
         date_from = today - timedelta(days=365)
     else:  # месяц по умолчанию
         date_from = today - timedelta(days=30)
+
     df = get_transactions_df(user, date_from=date_from)
+    category_stats = category_report(df)
     if df.empty or 'amount' not in df.columns:
-        return render(request, "analytics.html", {
+        return render(request, "utils/analytics.html", {
             "warning": "Нет данных для отображения.",
             "income_expense_plot": None,
             "expense_pie_plot": None,
             "stats": {},
             "anomalies": [],
-            "advices": []
+            "advices": [],
+            'category_stats': category_stats,
             })
     stats = calculate_stats(df)
     # stats['total_income'], stats['total_expense'], stats['balance']
@@ -101,7 +104,7 @@ def analytics(request):
         'img_income_expense': img_income_expense,
         'img_expense_pie': img_expense_pie,
         'stats': stats, 'anomalies': anomalies,
-        'advices': advices,
+        'advices': advices, 'category_stats': category_stats,
     })
 
 
