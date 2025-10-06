@@ -21,3 +21,14 @@ async def start_handler(message: Message):
         await message.answer(f"Привет, {display_name}! Я создал тебе аккаунт ✅", reply_markup=kb_expense)
     else:
         await message.answer(f"С возвращением, {display_name}! 👋", reply_markup=kb_expense)
+
+@router.message(Command("help"))
+async def help_handler(message: Message):
+    help_text = (
+        "Доступные команды:\n"
+        "/start — приветствие и добавление расходов\n"
+        "/today — расходы за сегодня\n"
+        "/week — статистика за неделю\n"
+        "/category food — траты по категории\n"
+    )
+    await message.answer(help_text, reply_markup=kb_expense)
