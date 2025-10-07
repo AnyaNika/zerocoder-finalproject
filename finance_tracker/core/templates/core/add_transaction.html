@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Добавить операцию</h2>
-<form method="post">
+<div class="container my-4">
+  <h2 class="mb-4">Добавить операцию</h2>
+  <form method="post" class="card card-body shadow-sm p-4">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Сохранить</button>
-</form>
+    <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
+  </form>
+</div>
 {% endblock %}

@@ -1,29 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Ваши операции</h2>
-<form method="get">
-    <label>С: <input type="date" name="date_from" value="{{ request.GET.date_from }}"></label>
-    <label>По: <input type="date" name="date_to" value="{{ request.GET.date_to }}"></label>
-    <label>Категория:
-        <select name="category">
-            <option value="">Все</option>
-            {% for cat in categories %}
-                <option value="{{ cat.id }}"{% if request.GET.category == cat.id|stringformat:"s" %} selected{% endif %}>
-                    {{ cat.name }}
-                </option>
-            {% endfor %}
-        </select>
-    </label>
-    <button type="submit">Фильтровать</button>
-</form>
-   <p><a href="{% url 'add_transaction' %}">Добавить операцию</a> |
-      <a href="{% url 'add_category' %}">Добавить категорию</a></p>
-<ul>
+<div class="container my-4">
+  <h2 class="mb-4">Ваши операции</h2>
+  <form method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-md-3">
+      <label for="date_from" class="form-label">С</label>
+      <input type="date" id="date_from" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+    </div>
+    <div class="col-md-3">
+      <label for="date_to" class="form-label">По</label>
+      <input type="date" id="date_to" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+    </div>
+    <div class="col-md-4">
+      <label for="category" class="form-label">Категория</label>
+      <select id="category" name="category" class="form-select">
+        <option value="">Все</option>
+        {% for cat in categories %}
+          <option value="{{ cat.id }}"{% if request.GET.category == cat.id|stringformat:"s" %} selected{% endif %}>
+            {{ cat.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+    </div>
+  </form>
+  <div class="mb-3">
+    <a href="{% url 'add_transaction' %}" class="btn btn-success btn-sm me-2">Добавить операцию</a>
+    <a href="{% url 'add_category' %}" class="btn btn-outline-secondary btn-sm">Добавить категорию</a>
+  </div>
+  <ul class="list-group">
     {% for t in transactions %}
-        <li>{{ t.date }} — {{ t.amount }} ({{ t.get_type_display }}) — {{ t.category }}</li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>
+          <strong>{{ t.date }}</strong> —
+          <span class="text-{% if t.type == 'income' %}success{% else %}danger{% endif %}">
+            {{ t.amount }}
+          </span>
+          ({{ t.get_type_display }}) —
+          <span class="badge bg-light text-dark">{{ t.category }}</span>
+        </span>
+      </li>
     {% empty %}
-        <li>Пока нет операций</li>
+      <li class="list-group-item text-muted">Пока нет операций</li>
     {% endfor %}
-</ul>
+  </ul>
+</div>
 {% endblock %}
